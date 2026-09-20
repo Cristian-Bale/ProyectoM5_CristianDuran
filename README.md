@@ -56,3 +56,24 @@ Visualizar un panel de alertas en tiempo real (semáforos de riesgo).
 Consultar tablas detalladas con métricas de drift por variable.
 
 Comparar gráficamente las curvas de distribución histórica frente a la población actual de producción.
+
+
+
+
+7. Despliegue del Modelo y Contenedorización (API con FastAPI y Docker)
+
+En esta etapa se ha completado la puesta en producción del modelo de Machine Learning para la predicción de riesgo crediticio, garantizando su portabilidad y facilidad de consumo mediante una API robusta.
+
+### Características Principales
+* **API de Predicción (`FastAPI`)**: Se desarrolló el script `model_deploy.py` que expone una interfaz web interactiva y un endpoint POST `/predict` optimizado para recibir datos en formato JSON.
+* **Soporte de Inferencia por Lotes**: La API permite procesar múltiples registros de clientes de forma simultánea en una sola solicitud.
+* **Alineación de Esquema**: Se integró un adaptador lógico en el servicio para asegurar que los datos crudos de entrada coincidan de forma transparente con los requerimientos y transformaciones internas del pipeline entrenado (`modelo_entrenado.pkl`).
+* **Contenedorización (`Docker`)**: Se empaquetó toda la aplicación utilizando un entorno aislado con Python 3.10-slim, asegurando que las dependencias (`requirements.txt`) y el modelo se ejecuten de manera idéntica en cualquier sistema operativo.
+
+---
+
+### Instrucciones para Ejecutar localmente con Docker
+
+1. **Construir la imagen de Docker**:
+   ```bash
+   docker build -t api-riesgo-credito:v1.0 .
