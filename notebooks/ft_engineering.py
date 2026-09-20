@@ -4,26 +4,26 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
-
 def preprocesar_datos(df, num_cols, cat_cols, ord_cols):
-    """Crea el pipiline y retorna los feactures transformados"""
+    """Crea el pipeline y retorna los features transformados como DataFrame"""
 
-    #Transformador numérico
+    # Transformador numérico
     num_transformer = SimpleImputer(strategy='median')
 
-    #Transformador categórico nominal
+    # Transformador categórico nominal
     cat_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='most_frequent')),
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))
+        # sparse_output=False es obligatorio para poder convertirlo a DataFrame después
+        ('onehot', OneHotEncoder(handle_unknown='ignore', sparse_output=False))
     ])
 
-    #Trasnformador categórico ordinal
+    # Transformador categórico ordinal
     ord_transformer = Pipeline(steps=[
         ('imputer', SimpleImputer(strategy='most_frequent')),
         ('ordinal', OrdinalEncoder())
     ])
 
-    #Emsamblar en ColumnTransformer
+    # Ensamblar en ColumnTransformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', num_transformer, num_cols),
@@ -31,8 +31,13 @@ def preprocesar_datos(df, num_cols, cat_cols, ord_cols):
             ('ord', ord_transformer, ord_cols)
         ])
 
-    #Aplicar la transformación 
-
+    # 1. Aplicar la transformación (esto devuelve una matriz de NumPy)
     X_transformado = preprocessor.fit_transform(df)
 
-    return X_transformado, preprocessor
+    # 2. Extraer los nombres de todas las columnas (incluyendo las nuevas generadas por OneHot)
+    nombres_columnas = preprocessor.get_feature_names_out()
+
+    # 3. Reconstruir el DataFrame de Pandas
+    df_transformado = pd.DataFrame(X_transformado, columns=nombres_columnas, index=df.index)
+
+    return df_transformado, preprocessor
