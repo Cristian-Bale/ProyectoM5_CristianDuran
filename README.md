@@ -77,3 +77,4 @@ En esta etapa se ha completado la puesta en producción del modelo de Machine Le
 1. **Construir la imagen de Docker**:
    ```bash
    docker build -t api-riesgo-credito:v1.0 .
+   docker build -t api-riesgo-credito:v1.0 .
